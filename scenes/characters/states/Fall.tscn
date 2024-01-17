@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dv7f7q8q6x3lv"]
+
+[ext_resource type="Script" path="res://scenes/characters/states/Fall.cs" id="1_isxup"]
+
+[node name="Fall" type="Node"]
+script = ExtResource("1_isxup")

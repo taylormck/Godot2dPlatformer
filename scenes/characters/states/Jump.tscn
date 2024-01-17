@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://nhbqjd3d0ntp"]
+
+[ext_resource type="Script" path="res://scenes/characters/states/Jump.cs" id="1_jxy0u"]
+
+[node name="Jump" type="Node"]
+script = ExtResource("1_jxy0u")
