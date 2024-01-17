@@ -10,9 +10,12 @@ config_version=5
 
 [application]
 
-config/name="Platformer 2"
+config/name="Godot2dPlatformer"
+config/description="Just a basic platformer to get used to Godot, and to practice building platformer/metroidvania controls."
+config/version="0.0.1"
 run/main_scene="res://scenes/menus/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
@@ -31,6 +34,7 @@ version_control/autoload_on_startup=true
 
 [filesystem]
 
+import/blender/enabled=false
 import/fbx/enabled=false
 
 [input]
