@@ -2,6 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <RootNamespace>Platformer2</RootNamespace>
+    <RootNamespace>Godot2dPlatformer</RootNamespace>
   </PropertyGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Platformer 2", "Platformer 2.csproj", "{EC5BA67D-EA49-4F48-B462-B7FADEB83482}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot2dPlatformer", "Godot2dPlatformer.csproj", "{EC5BA67D-EA49-4F48-B462-B7FADEB83482}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
