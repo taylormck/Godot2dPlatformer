@@ -8,7 +8,7 @@ size = Vector2(364, 40)
 [node name="World" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_q66pl")]
-position = Vector2(99, 401)
+position = Vector2(100, 401)
 
 [node name="Floors" type="Node" parent="."]
 

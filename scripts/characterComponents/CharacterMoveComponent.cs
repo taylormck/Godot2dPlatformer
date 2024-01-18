@@ -76,9 +76,6 @@ public abstract partial class CharacterMoveComponent : Node
 		JumpForce = CalculateJumpForce(JumpHeight, JumpDistance);
 		DoubleJumpForce = CalculateJumpForce(DoubleJumpHeight, DoubleJumpDistance);
 		Gravity = CalculateGravity();
-
-		GD.Print("JumpForce: ", JumpForce);
-		GD.Print("DoubleJumpForce: ", DoubleJumpForce);
 	}
 
 	// These formulas are based on the famous GDC talk about building
