@@ -7,10 +7,28 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${env:GODOT4}",
-            "args": [],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
-            "stopAtEntry": false
+            "stopAtEntry": false,
+            "args": [
+                "--path",
+                "${workspaceRoot}"
+            ]
+        },
+        {
+            "name": "Launch Scene",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:GODOT4}",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "args": [
+                "--path",
+                "${workspaceRoot}",
+                "${command:godot.csharp.getLaunchScene}"
+            ]
         },
         {
             "name": "Attach",
