@@ -7,112 +7,114 @@ size = Vector2(364, 40)
 
 [node name="World" type="Node2D"]
 
-[node name="Floor1" type="StaticBody2D" parent="."]
+[node name="Player" parent="." instance=ExtResource("1_q66pl")]
+position = Vector2(99, 401)
+
+[node name="Floors" type="Node" parent="."]
+
+[node name="Floor1" type="StaticBody2D" parent="Floors"]
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor1"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor1"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor1"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor2" type="StaticBody2D" parent="."]
+[node name="Floor2" type="StaticBody2D" parent="Floors"]
 position = Vector2(360, 37)
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor2"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor2"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor2"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor3" type="StaticBody2D" parent="."]
+[node name="Floor3" type="StaticBody2D" parent="Floors"]
 position = Vector2(720, -1)
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor3"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor3"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor3"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor4" type="StaticBody2D" parent="."]
+[node name="Floor4" type="StaticBody2D" parent="Floors"]
 position = Vector2(771, -41)
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor4"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor4"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor4"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor5" type="StaticBody2D" parent="."]
+[node name="Floor5" type="StaticBody2D" parent="Floors"]
 position = Vector2(-461, 589)
 rotation = -1.57356
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor5"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor5"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor5"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor5"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor6" type="StaticBody2D" parent="."]
+[node name="Floor6" type="StaticBody2D" parent="Floors"]
 position = Vector2(626, 532)
 rotation = -1.57356
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor6"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor6"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor6"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor6"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
 
-[node name="Floor7" type="StaticBody2D" parent="."]
+[node name="Floor7" type="StaticBody2D" parent="Floors"]
 position = Vector2(626, 532)
 rotation = -1.57356
 metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="Floor7"]
+[node name="ColorRect" type="ColorRect" parent="Floors/Floor7"]
 offset_left = 68.0
 offset_top = 487.0
 offset_right = 432.0
 offset_bottom = 527.0
 color = Color(0.176471, 1, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor7"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floors/Floor7"]
 position = Vector2(250, 507)
 shape = SubResource("RectangleShape2D_hc6fo")
-
-[node name="Player" parent="." instance=ExtResource("1_q66pl")]
-position = Vector2(99, 401)

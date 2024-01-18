@@ -23,6 +23,17 @@ public partial class Fall : State
 	private float _gravityMultiplier = 3.0f;
 
 
+	public override State ProcessInput(InputEvent inputEvent)
+	{
+		if (_moveComponent.WantsJump() && _moveComponent.CanDoubleJump)
+		{
+			_moveComponent.SpendDoubleJump();
+			return _jumpState;
+		}
+
+		return this;
+	}
+
 	public override State ProcessPhysics(double delta)
 	{
 		float horizontalMovement = Input.GetAxis("move_left", "move_right") * _moveComponent.MoveSpeed;
@@ -37,6 +48,8 @@ public partial class Fall : State
 
 		if (_player.IsOnFloor())
 		{
+			_moveComponent.RefreshDoubleJump();
+
 			if (horizontalMovement == 0)
 				return _idleState;
 			return _moveState;

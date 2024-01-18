@@ -1,5 +1,5 @@
 using Godot;
-using System;
+
 
 public partial class Jump : State
 {
@@ -17,6 +17,10 @@ public partial class Jump : State
 	[Export]
 	private CharacterMoveComponent _moveComponent;
 
+	[ExportGroup("JumpProperties")]
+	[Export]
+	private float _minJumpHeight;
+
 	public override void Enter()
 	{
 		// TODO play animation
@@ -25,13 +29,23 @@ public partial class Jump : State
 
 	public override State ProcessInput(InputEvent inputEvent)
 	{
-		// TODO add double-jump
+		// TODO doesn't work with controllers because they don't continuously
+		// send the pressed signal
+		// if (!_moveComponent.WantsJump())
+		// 	return _fallState;
+
+		if (_moveComponent.WantsJump() && _moveComponent.CanDoubleJump)
+		{
+			_player.Velocity = _player.Velocity with { Y = -_moveComponent.DoubleJumpForce };
+			_moveComponent.SpendDoubleJump();
+		}
+
 		return this;
 	}
 
 	public override State ProcessPhysics(double delta)
 	{
-		float horizontalMovement = Input.GetAxis("move_left", "move_right") * _moveComponent.MoveSpeed;
+		float horizontalMovement = _moveComponent.WantsMovement();
 		float verticalMovement = _player.Velocity.Y + (float)(_moveComponent.Gravity * delta);
 		_player.Velocity = _player.Velocity with
 		{
@@ -47,6 +61,7 @@ public partial class Jump : State
 		{
 			if (horizontalMovement == 0)
 				return _idleState;
+
 			return _moveState;
 		}
 

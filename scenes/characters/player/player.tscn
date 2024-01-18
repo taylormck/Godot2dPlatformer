@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c6mdef46splo2" path="res://scenes/characters/states/Move.tscn" id="3_bcoqi"]
 [ext_resource type="PackedScene" uid="uid://nhbqjd3d0ntp" path="res://scenes/characters/states/Jump.tscn" id="5_4psxw"]
 [ext_resource type="PackedScene" uid="uid://dv7f7q8q6x3lv" path="res://scenes/characters/states/Fall.tscn" id="6_uk6qs"]
-[ext_resource type="Script" path="res://scenes/characters/player/CharacterMoveComponent.cs" id="7_ks8ta"]
+[ext_resource type="Script" path="res://scenes/characters/player/PlayerMoveComponent.cs" id="7_ks8ta"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8t07k"]
 radius = 20.0
@@ -32,28 +32,27 @@ _startingState = NodePath("Idle")
 _fallState = NodePath("../Fall")
 _jumpState = NodePath("../Jump")
 _moveState = NodePath("../Move")
-_moveComponent = NodePath("../../CharacterMoveComponent")
+_moveComponent = NodePath("../../PlayerMoveComponent")
 
 [node name="Move" parent="StateMachine" node_paths=PackedStringArray("_fallState", "_idleState", "_jumpState", "_moveComponent") instance=ExtResource("3_bcoqi")]
 _fallState = NodePath("../Fall")
 _idleState = NodePath("../Idle")
 _jumpState = NodePath("../Jump")
-_moveComponent = NodePath("../../CharacterMoveComponent")
+_moveComponent = NodePath("../../PlayerMoveComponent")
 
 [node name="Jump" parent="StateMachine" node_paths=PackedStringArray("_fallState", "_idleState", "_moveState", "_moveComponent") instance=ExtResource("5_4psxw")]
 _fallState = NodePath("../Fall")
 _idleState = NodePath("../Idle")
 _moveState = NodePath("../Move")
-_moveComponent = NodePath("../../CharacterMoveComponent")
+_moveComponent = NodePath("../../PlayerMoveComponent")
 
 [node name="Fall" parent="StateMachine" node_paths=PackedStringArray("_idleState", "_jumpState", "_moveState", "_moveComponent") instance=ExtResource("6_uk6qs")]
 _idleState = NodePath("../Idle")
 _jumpState = NodePath("../Jump")
 _moveState = NodePath("../Move")
-_moveComponent = NodePath("../../CharacterMoveComponent")
+_moveComponent = NodePath("../../PlayerMoveComponent")
 
-[node name="CharacterMoveComponent" type="Node" parent="."]
+[node name="PlayerMoveComponent" type="Node" parent="."]
 script = ExtResource("7_ks8ta")
-MoveSpeed = 400
-JumpHeight = 300
-JumpDistance = 150
+JumpDistance = 100
+DoubleJumpHeight = 100

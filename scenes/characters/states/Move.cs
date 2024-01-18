@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 
 public partial class Move : State
@@ -22,7 +21,7 @@ public partial class Move : State
 	public override State ProcessInput(InputEvent inputEvent)
 	{
 		// TODO Add coyote time
-		if (Input.IsActionJustPressed("jump"))
+		if (_moveComponent.WantsJump())
 			return _jumpState;
 
 		return this;
@@ -30,10 +29,10 @@ public partial class Move : State
 
 	public override State ProcessPhysics(double delta)
 	{
-		double horizontalMovement = Input.GetAxis("move_left", "move_right") * _moveComponent.MoveSpeed;
+		float horizontalMovement = _moveComponent.WantsMovement();
 
 		Vector2 newVelocity = _player.Velocity;
-		newVelocity.X = (float)horizontalMovement;
+		newVelocity.X = horizontalMovement;
 		newVelocity.Y += (float)(_moveComponent.Gravity * delta);
 
 		_player.Velocity = newVelocity;
