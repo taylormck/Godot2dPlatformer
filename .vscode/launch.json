@@ -31,6 +31,21 @@
             ]
         },
         {
+            "name": "Launch Editor",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:GODOT4}",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "args": [
+                "--path",
+                "${workspaceRoot}",
+                "-e"
+            ]
+        },
+        {
             "name": "Attach",
             "type": "coreclr",
             "request": "attach",
