@@ -37,6 +37,10 @@ version_control/autoload_on_startup=true
 import/blender/enabled=false
 import/fbx/enabled=false
 
+[gui]
+
+theme/custom_font="res://thirdPartyAssets/fonts/Silver.ttf"
+
 [input]
 
 move_left={

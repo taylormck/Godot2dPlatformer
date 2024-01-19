@@ -1,12 +1,18 @@
-[gd_scene format=3 uid="uid://fl11hxvso04v"]
+[gd_scene load_steps=3 format=3 uid="uid://fl11hxvso04v"]
+
+[ext_resource type="FontFile" uid="uid://cn76cs0ghdbr2" path="res://thirdPartyAssets/fonts/Silver.ttf" id="1_nqv7h"]
+
+[sub_resource type="Theme" id="Theme_habpm"]
+default_font = ExtResource("1_nqv7h")
+default_font_size = 64
 
 [node name="MainMenu" type="Node"]
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 1151.0
-offset_bottom = 647.0
+offset_right = 1279.0
+offset_bottom = 719.0
 
 [node name="Label" type="Label" parent="Control"]
 layout_mode = 1
@@ -15,10 +21,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
+offset_left = -36.0
 offset_top = -11.5
-offset_right = 20.0
+offset_right = 36.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_habpm")
 text = "Welcome"
