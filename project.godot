@@ -32,14 +32,14 @@ project/assembly_name="Platformer 2"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/ldtk-importer/plugin.cfg")
+
 [filesystem]
 
 import/blender/enabled=false
 import/fbx/enabled=false
-
-[gui]
-
-theme/custom_font="res://thirdPartyAssets/fonts/Silver.ttf"
 
 [input]
 
@@ -65,3 +65,7 @@ jump={
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"button_index":0,"pressure":0.0,"pressed":true,"script":null)
 ]
 }
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
