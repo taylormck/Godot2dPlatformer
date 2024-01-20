@@ -170,6 +170,7 @@ transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition
 graph_offset = Vector2(84, -7)
 
 [node name="NinjaFrog" type="CharacterBody2D" groups=["player"]]
+collision_mask = 2
 input_pickable = true
 script = ExtResource("1_xi1lh")
 

@@ -354,15 +354,15 @@ initial_state = NodePath("Grounded")
 [node name="Grounded" type="Node" parent="StateChart/Root/Movement"]
 script = ExtResource("7_j1ab4")
 
+[node name="On Jump" type="Node" parent="StateChart/Root/Movement/Grounded"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Airborne/Jumpability/DoubleJump")
+event = &"jump"
+
 [node name="On Airborne" type="Node" parent="StateChart/Root/Movement/Grounded"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../Airborne")
 event = &"airborne"
-
-[node name="On Jump" type="Node" parent="StateChart/Root/Movement/Grounded"]
-script = ExtResource("8_20j3p")
-to = NodePath("../../Airborne")
-event = &"jump"
 
 [node name="Airborne" type="Node" parent="StateChart/Root/Movement"]
 script = ExtResource("5_30d6h")

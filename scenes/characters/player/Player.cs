@@ -41,6 +41,11 @@ public partial class Player : CharacterBody2D
 		float wantedHorizontalVelocity = _moveComponent.WantsMovement();
 		float verticalAcceleration = 0.0f;
 
+		// TODO Move this to the MoveComponent
+		Velocity = Velocity with { X = wantedHorizontalVelocity };
+
+		MoveAndSlide();
+
 		if (Math.Abs(wantedHorizontalVelocity) > 0.005)
 			_stateChart.SendEvent("moving");
 		else
@@ -52,25 +57,21 @@ public partial class Player : CharacterBody2D
 		else
 		{
 			_stateChart.SendEvent("airborne");
+
+			// TODO Move this to the MoveComponent
+			// TODO implement better gravity approximation
 			verticalAcceleration = _moveComponent.Gravity * (float)delta;
+			Velocity = Velocity with { Y = Velocity.Y + verticalAcceleration };
 		}
 
-		// Move this to the MoveComponent
-		Velocity = Velocity with
-		{
-			X = wantedHorizontalVelocity,
-			Y = Velocity.Y + verticalAcceleration
-		};
-
-		MoveAndSlide();
 	}
 
 	public void OnJumpEnabledStatePhysicsProcess(double delta)
 	{
 		if (_moveComponent.WantsJump())
 		{
-			Velocity = Velocity with { Y = -_moveComponent.JumpVelocity };
 			_stateChart.SendEvent("jump");
+			Velocity = Velocity with { Y = -_moveComponent.JumpVelocity };
 		}
 	}
 
@@ -78,8 +79,8 @@ public partial class Player : CharacterBody2D
 	{
 		if (_moveComponent.WantsJump())
 		{
-			Velocity = Velocity with { Y = -_moveComponent.DoubleJumpVelocity };
 			_stateChart.SendEvent("double_jump");
+			Velocity = Velocity with { Y = -_moveComponent.DoubleJumpVelocity };
 		}
 	}
 }
