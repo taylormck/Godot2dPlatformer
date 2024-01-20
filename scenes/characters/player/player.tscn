@@ -14,6 +14,7 @@ radius = 22.0
 height = 104.0
 
 [node name="Player" type="CharacterBody2D"]
+collision_mask = 2
 script = ExtResource("1_wx4jg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
