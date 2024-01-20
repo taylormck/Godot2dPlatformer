@@ -8,15 +8,16 @@ public partial class Move : State
 	private State _fallState;
 
 	[Export]
-	private State _idleState;
-
-	[Export]
 	private State _jumpState;
 
 	[ExportGroup("Components")]
 	[Export]
 	private CharacterMoveComponent _moveComponent;
 
+	public override void Enter()
+	{
+		_moveComponent.RefreshDoubleJump();
+	}
 
 	public override State ProcessInput(InputEvent inputEvent)
 	{
@@ -38,11 +39,6 @@ public partial class Move : State
 		_player.Velocity = newVelocity;
 
 		_player.MoveAndSlide();
-
-		if (horizontalMovement == 0)
-			return _idleState;
-
-		// TODO adjust animation based on direction
 
 		// TODO Add coyote time
 		if (!_player.IsOnFloor())

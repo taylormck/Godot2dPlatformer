@@ -6,9 +6,6 @@ public partial class Fall : State
 
 	[ExportGroup("ConnectedStates")]
 	[Export]
-	private State _idleState;
-
-	[Export]
 	private State _jumpState;
 
 	[Export]
@@ -27,8 +24,8 @@ public partial class Fall : State
 	{
 		if (_moveComponent.WantsJump() && _moveComponent.CanDoubleJump)
 		{
+			_player.Velocity = _player.Velocity with { Y = -_moveComponent.DoubleJumpForce };
 			_moveComponent.SpendDoubleJump();
-			return _jumpState;
 		}
 
 		return this;
@@ -36,24 +33,22 @@ public partial class Fall : State
 
 	public override State ProcessPhysics(double delta)
 	{
+		Vector2 currentVelocity = _player.Velocity;
 		float horizontalMovement = Input.GetAxis("move_left", "move_right") * _moveComponent.MoveSpeed;
+
+		float verticalMovementMultiplier = currentVelocity.Y > 0 ? _gravityMultiplier : 1;
+		float verticalAcceleration = _moveComponent.Gravity * verticalMovementMultiplier * (float)delta;
 
 		_player.Velocity = _player.Velocity with
 		{
 			X = horizontalMovement,
-			Y = _player.Velocity.Y + (float)(_moveComponent.Gravity * _gravityMultiplier * delta)
+			Y = _player.Velocity.Y + verticalAcceleration
 		};
 
 		_player.MoveAndSlide();
 
 		if (_player.IsOnFloor())
-		{
-			_moveComponent.RefreshDoubleJump();
-
-			if (horizontalMovement == 0)
-				return _idleState;
 			return _moveState;
-		}
 
 		return this;
 	}

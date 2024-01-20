@@ -8,9 +8,6 @@ public partial class Jump : State
 	private State _fallState;
 
 	[Export]
-	private State _idleState;
-
-	[Export]
 	private State _moveState;
 
 	[ExportGroup("Components")]
@@ -58,12 +55,7 @@ public partial class Jump : State
 		_player.MoveAndSlide();
 
 		if (_player.IsOnFloor())
-		{
-			if (horizontalMovement == 0)
-				return _idleState;
-
 			return _moveState;
-		}
 
 		if (verticalMovement > 0)
 			return _fallState;

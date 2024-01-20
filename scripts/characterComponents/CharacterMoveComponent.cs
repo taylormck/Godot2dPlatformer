@@ -3,13 +3,18 @@ using System;
 
 public abstract partial class CharacterMoveComponent : Node
 {
+	static int TileSize = 16;
+
+	[Export]
+	private CharacterBody2D _character;
+
 	[ExportGroup("MovementVariables")]
 
-	private int _moveSpeed = 300;
+	private int _moveSpeed = 3;
 	[Export]
 	public int MoveSpeed
 	{
-		get => _moveSpeed;
+		get => _moveSpeed * TileSize;
 		set
 		{
 			_moveSpeed = value;
@@ -17,11 +22,11 @@ public abstract partial class CharacterMoveComponent : Node
 		}
 	}
 
-	private int _jumpHeight = 100;
+	private int _jumpHeight = 4;
 	[Export]
 	public int JumpHeight
 	{
-		get => _jumpHeight;
+		get => _jumpHeight * TileSize;
 		set
 		{
 			_jumpHeight = value;
@@ -31,11 +36,11 @@ public abstract partial class CharacterMoveComponent : Node
 
 
 
-	private int _jumpDistance = 200;
+	private int _jumpDistance = 3;
 	[Export]
 	public int JumpDistance
 	{
-		get => _jumpDistance;
+		get => _jumpDistance * TileSize;
 		set
 		{
 			_jumpDistance = value;
@@ -43,11 +48,11 @@ public abstract partial class CharacterMoveComponent : Node
 		}
 	}
 
-	private int _doubleJumpHeight = 50;
+	private int _doubleJumpHeight = 2;
 	[Export]
 	public int DoubleJumpHeight
 	{
-		get => _doubleJumpHeight;
+		get => _doubleJumpHeight * TileSize;
 		set
 		{
 			_doubleJumpHeight = value;
@@ -55,11 +60,11 @@ public abstract partial class CharacterMoveComponent : Node
 		}
 	}
 
-	private int _doubleJumpDistance = 200;
+	private int _doubleJumpDistance = 2;
 	[Export]
 	public int DoubleJumpDistance
 	{
-		get => _doubleJumpDistance;
+		get => _doubleJumpDistance * TileSize;
 		set
 		{
 			_doubleJumpDistance = value;
