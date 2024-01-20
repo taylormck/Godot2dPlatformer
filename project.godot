@@ -37,7 +37,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/ldtk-importer/plugin.cfg")
+enabled=PackedStringArray("res://addons/YATI/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/ldtk-importer/plugin.cfg")
 
 [filesystem]
 

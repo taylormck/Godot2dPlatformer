@@ -13,14 +13,4 @@ public partial class PlayerMoveComponent : CharacterMoveComponent
 	{
 		return Input.IsActionJustPressed("jump");
 	}
-
-	public override void RefreshDoubleJump()
-	{
-		CanDoubleJump = true;
-	}
-
-	public override void SpendDoubleJump()
-	{
-		CanDoubleJump = false;
-	}
 }

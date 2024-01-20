@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dxdxdfdi137ic"]
+[gd_scene load_steps=5 format=3 uid="uid://dxdxdfdi137ic"]
 
 [ext_resource type="PackedScene" uid="uid://narcqbtsxywd" path="res://scenes/levels/mansion/mansion.ldtk" id="1_najfj"]
 [ext_resource type="Texture2D" uid="uid://yqv82vh71il6" path="res://thirdPartyAssets/tilesets/mansion/Background.png" id="2_4h1ig"]
 [ext_resource type="PackedScene" uid="uid://bk7exhilw61bg" path="res://scenes/characters/player/player.tscn" id="2_ajc56"]
+[ext_resource type="PackedScene" uid="uid://bcwkugn6v3oy7" path="res://addons/godot_state_charts/utilities/state_chart_debugger.tscn" id="4_aepiv"]
 
 [node name="mansion" instance=ExtResource("1_najfj")]
 
@@ -14,4 +15,11 @@ region_enabled = true
 region_rect = Rect2(-2, -76, 640, 360)
 
 [node name="Player" parent="." index="1" instance=ExtResource("2_ajc56")]
-position = Vector2(57, 278)
+position = Vector2(50, 44)
+
+[node name="StateChartDebugger" parent="." index="2" instance=ExtResource("4_aepiv")]
+offset_left = 290.0
+offset_top = -3.0
+offset_right = 635.0
+offset_bottom = 220.0
+initial_node_to_watch = NodePath("../Player")

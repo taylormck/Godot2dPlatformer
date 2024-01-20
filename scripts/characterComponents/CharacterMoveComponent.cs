@@ -72,14 +72,14 @@ public abstract partial class CharacterMoveComponent : Node
 		}
 	}
 
-	public float JumpForce { get; protected set; }
-	public float DoubleJumpForce { get; protected set; }
+	public float JumpVelocity { get; protected set; }
+	public float DoubleJumpVelocity { get; protected set; }
 	public float Gravity { get; protected set; }
 
 	private void RecalculateDependentProperties()
 	{
-		JumpForce = CalculateJumpForce(JumpHeight, JumpDistance);
-		DoubleJumpForce = CalculateJumpForce(DoubleJumpHeight, DoubleJumpDistance);
+		JumpVelocity = CalculateJumpForce(JumpHeight, JumpDistance);
+		DoubleJumpVelocity = CalculateJumpForce(DoubleJumpHeight, DoubleJumpDistance);
 		Gravity = CalculateGravity();
 	}
 
@@ -103,14 +103,8 @@ public abstract partial class CharacterMoveComponent : Node
 	public override void _Ready()
 	{
 		RecalculateDependentProperties();
-		RefreshDoubleJump();
 	}
 
 	public abstract float WantsMovement();
 	public abstract bool WantsJump();
-
-	private bool _canDoubleJump = false;
-	public virtual bool CanDoubleJump { get; protected set; } = false;
-	public virtual void RefreshDoubleJump() { }
-	public virtual void SpendDoubleJump() { }
 }
