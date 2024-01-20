@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cxbukhp6ipqrp"]
 
-[ext_resource type="PackedScene" uid="uid://bhnvs0adntfpo" path="res://scenes/characters/player/player.tscn" id="1_q66pl"]
+[ext_resource type="PackedScene" uid="uid://bk7exhilw61bg" path="res://scenes/characters/player/player.tscn" id="1_q66pl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hc6fo"]
 size = Vector2(364, 40)
@@ -8,7 +8,7 @@ size = Vector2(364, 40)
 [node name="World" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_q66pl")]
-position = Vector2(100, 401)
+position = Vector2(104, 344)
 
 [node name="Floors" type="Node" parent="."]
 

@@ -1,29 +1,30 @@
-[gd_scene load_steps=9 format=3 uid="uid://bhnvs0adntfpo"]
+[gd_scene load_steps=10 format=3 uid="uid://bk7exhilw61bg"]
 
 [ext_resource type="PackedScene" uid="uid://3w5pqnq3g5yg" path="res://scripts/StateMachine/StateMachine.tscn" id="1_2wdfa"]
 [ext_resource type="Script" path="res://scenes/characters/player/Player.cs" id="1_wx4jg"]
+[ext_resource type="Texture2D" uid="uid://hxh6k5rshr5d" path="res://thirdPartyAssets/sprites/PitayaBase.png" id="2_2xx0l"]
 [ext_resource type="PackedScene" uid="uid://cei480yrr4e64" path="res://scenes/characters/states/Idle.tscn" id="2_3b7vy"]
 [ext_resource type="PackedScene" uid="uid://c6mdef46splo2" path="res://scenes/characters/states/Move.tscn" id="3_bcoqi"]
 [ext_resource type="PackedScene" uid="uid://nhbqjd3d0ntp" path="res://scenes/characters/states/Jump.tscn" id="5_4psxw"]
 [ext_resource type="PackedScene" uid="uid://dv7f7q8q6x3lv" path="res://scenes/characters/states/Fall.tscn" id="6_uk6qs"]
 [ext_resource type="Script" path="res://scenes/characters/player/PlayerMoveComponent.cs" id="7_ks8ta"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8t07k"]
-radius = 20.0
-height = 60.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4dbf3"]
+radius = 22.0
+height = 104.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_wx4jg")
-metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_right = 40.0
-offset_bottom = 60.0
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(36, 33)
+texture = ExtResource("2_2xx0l")
+hframes = 16
+vframes = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(20, 30)
-shape = SubResource("CapsuleShape2D_8t07k")
-metadata/_edit_group_ = true
+position = Vector2(37, 55)
+shape = SubResource("CapsuleShape2D_4dbf3")
 
 [node name="StateMachine" parent="." node_paths=PackedStringArray("_startingState") instance=ExtResource("1_2wdfa")]
 _startingState = NodePath("Idle")
@@ -34,10 +35,10 @@ _jumpState = NodePath("../Jump")
 _moveState = NodePath("../Move")
 _moveComponent = NodePath("../../PlayerMoveComponent")
 
-[node name="Move" parent="StateMachine" node_paths=PackedStringArray("_fallState", "_idleState", "_jumpState", "_moveComponent") instance=ExtResource("3_bcoqi")]
-_fallState = NodePath("../Fall")
+[node name="Fall" parent="StateMachine" node_paths=PackedStringArray("_idleState", "_jumpState", "_moveState", "_moveComponent") instance=ExtResource("6_uk6qs")]
 _idleState = NodePath("../Idle")
 _jumpState = NodePath("../Jump")
+_moveState = NodePath("../Move")
 _moveComponent = NodePath("../../PlayerMoveComponent")
 
 [node name="Jump" parent="StateMachine" node_paths=PackedStringArray("_fallState", "_idleState", "_moveState", "_moveComponent") instance=ExtResource("5_4psxw")]
@@ -46,13 +47,11 @@ _idleState = NodePath("../Idle")
 _moveState = NodePath("../Move")
 _moveComponent = NodePath("../../PlayerMoveComponent")
 
-[node name="Fall" parent="StateMachine" node_paths=PackedStringArray("_idleState", "_jumpState", "_moveState", "_moveComponent") instance=ExtResource("6_uk6qs")]
+[node name="Move" parent="StateMachine" node_paths=PackedStringArray("_fallState", "_idleState", "_jumpState", "_moveComponent") instance=ExtResource("3_bcoqi")]
+_fallState = NodePath("../Fall")
 _idleState = NodePath("../Idle")
 _jumpState = NodePath("../Jump")
-_moveState = NodePath("../Move")
 _moveComponent = NodePath("../../PlayerMoveComponent")
 
 [node name="PlayerMoveComponent" type="Node" parent="."]
 script = ExtResource("7_ks8ta")
-JumpDistance = 100
-DoubleJumpHeight = 100
