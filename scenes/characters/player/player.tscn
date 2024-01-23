@@ -333,9 +333,11 @@ tree_root = SubResource("AnimationNodeStateMachine_dg5os")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Move/blend_position = 0
 
-[node name="PlayerMoveComponent" type="Node" parent="."]
+[node name="PlayerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
 script = ExtResource("7_ks8ta")
+_character = NodePath("..")
 MoveSpeed = 12
+MoveAcceleration = 3
 JumpHeight = 6
 JumpDistance = 4
 DoubleJumpHeight = 4

@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dxdxdfdi137ic"]
+[gd_scene load_steps=5 format=3 uid="uid://dxdxdfdi137ic"]
 
 [ext_resource type="PackedScene" uid="uid://narcqbtsxywd" path="res://scenes/levels/mansion/mansion.ldtk" id="1_najfj"]
 [ext_resource type="Texture2D" uid="uid://yqv82vh71il6" path="res://thirdPartyAssets/tilesets/mansion/Background.png" id="2_4h1ig"]
 [ext_resource type="PackedScene" uid="uid://bk7exhilw61bg" path="res://scenes/characters/player/player.tscn" id="2_ajc56"]
 [ext_resource type="PackedScene" uid="uid://bcwkugn6v3oy7" path="res://addons/godot_state_charts/utilities/state_chart_debugger.tscn" id="4_aepiv"]
-[ext_resource type="PackedScene" uid="uid://v5vg88it87oj" path="res://scenes/characters/ninja_frog/ninja_frog.tscn" id="5_1nm0r"]
 
 [node name="mansion" instance=ExtResource("1_najfj")]
 
@@ -24,7 +23,3 @@ offset_top = -3.0
 offset_right = 635.0
 offset_bottom = 220.0
 initial_node_to_watch = NodePath("../Player")
-
-[node name="NinjaFrog" parent="." index="3" instance=ExtResource("5_1nm0r")]
-visible = false
-position = Vector2(78, 288)

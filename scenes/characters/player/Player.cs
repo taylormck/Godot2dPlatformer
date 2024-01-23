@@ -23,7 +23,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
-		float direction = _moveComponent.WantsMovement();
+		float direction = _moveComponent.WantedMovement();
 		_animationTree.Set("parameters/Move/blend_position", direction);
 
 		if (direction < 0)
@@ -38,11 +38,9 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		float wantedHorizontalVelocity = _moveComponent.WantsMovement();
-		float verticalAcceleration = 0.0f;
+		float wantedHorizontalVelocity = _moveComponent.WantedMovement();
 
-		// TODO Move this to the MoveComponent
-		Velocity = Velocity with { X = wantedHorizontalVelocity };
+		_moveComponent.SetHorizontalVelocity();
 
 		MoveAndSlide();
 
@@ -51,19 +49,16 @@ public partial class Player : CharacterBody2D
 		else
 			_stateChart.SendEvent("idle");
 
-
 		if (IsOnFloor())
+		{
 			_stateChart.SendEvent("grounded");
+			_moveComponent.Grounded();
+		}
 		else
 		{
 			_stateChart.SendEvent("airborne");
-
-			// TODO Move this to the MoveComponent
-			// TODO implement better gravity approximation
-			verticalAcceleration = _moveComponent.Gravity * (float)delta;
-			Velocity = Velocity with { Y = Velocity.Y + verticalAcceleration };
+			_moveComponent.ApplyGravity(delta);
 		}
-
 	}
 
 	public void OnJumpEnabledStatePhysicsProcess(double delta)
@@ -71,7 +66,7 @@ public partial class Player : CharacterBody2D
 		if (_moveComponent.WantsJump())
 		{
 			_stateChart.SendEvent("jump");
-			Velocity = Velocity with { Y = -_moveComponent.JumpVelocity };
+			_moveComponent.ApplyJump();
 		}
 	}
 
@@ -80,7 +75,7 @@ public partial class Player : CharacterBody2D
 		if (_moveComponent.WantsJump())
 		{
 			_stateChart.SendEvent("double_jump");
-			Velocity = Velocity with { Y = -_moveComponent.DoubleJumpVelocity };
+			_moveComponent.ApplyDoubleJump();
 		}
 	}
 }
