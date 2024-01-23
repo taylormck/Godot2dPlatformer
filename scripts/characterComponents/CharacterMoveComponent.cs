@@ -6,9 +6,9 @@ public abstract partial class CharacterMoveComponent : Node
 	static int TileSize = 16;
 
 	[Export]
-	private CharacterBody2D _character;
+	protected CharacterBody2D _character;
 
-	[ExportGroup("MovementVariables")]
+	[ExportGroup("Movement Variables")]
 
 	private int _moveSpeed = 3;
 	[Export]
@@ -20,6 +20,14 @@ public abstract partial class CharacterMoveComponent : Node
 			_moveSpeed = value;
 			RecalculateDependentProperties();
 		}
+	}
+
+	private int _moveAcceleration = 1;
+	[Export]
+	public int MoveAcceleration
+	{
+		get => _moveAcceleration * TileSize;
+		set => _moveAcceleration = value;
 	}
 
 	private int _jumpHeight = 4;
@@ -72,14 +80,16 @@ public abstract partial class CharacterMoveComponent : Node
 		}
 	}
 
-	public float JumpForce { get; protected set; }
-	public float DoubleJumpForce { get; protected set; }
+	public float JumpVelocity { get; protected set; }
+	public float DoubleJumpVelocity { get; protected set; }
 	public float Gravity { get; protected set; }
+
+	private Vector2 Velocity { get; set; } = Vector2.Zero;
 
 	private void RecalculateDependentProperties()
 	{
-		JumpForce = CalculateJumpForce(JumpHeight, JumpDistance);
-		DoubleJumpForce = CalculateJumpForce(DoubleJumpHeight, DoubleJumpDistance);
+		JumpVelocity = CalculateJumpForce(JumpHeight, JumpDistance);
+		DoubleJumpVelocity = CalculateJumpForce(DoubleJumpHeight, DoubleJumpDistance);
 		Gravity = CalculateGravity();
 	}
 
@@ -103,14 +113,46 @@ public abstract partial class CharacterMoveComponent : Node
 	public override void _Ready()
 	{
 		RecalculateDependentProperties();
-		RefreshDoubleJump();
 	}
 
-	public abstract float WantsMovement();
+	public abstract float WantedMovement();
+
+	public virtual void SetHorizontalVelocity()
+	{
+		// TODO Decelerate faster than we accelerate
+		float horizontalVelocity = Mathf.MoveToward(Velocity.X, WantedMovement(), MoveAcceleration);
+		// float horizontalVelocity = WantedMovement();
+		Velocity = Velocity with { X = horizontalVelocity };
+		_character.Velocity = Velocity;
+	}
+
 	public abstract bool WantsJump();
 
-	private bool _canDoubleJump = false;
-	public virtual bool CanDoubleJump { get; protected set; } = false;
-	public virtual void RefreshDoubleJump() { }
-	public virtual void SpendDoubleJump() { }
+	public virtual void ApplyJump()
+	{
+		Velocity = Velocity with { Y = -JumpVelocity };
+		_character.Velocity = Velocity;
+	}
+
+	public virtual void ApplyDoubleJump()
+	{
+		Velocity = Velocity with { Y = -DoubleJumpVelocity };
+	}
+
+	public virtual void ApplyGravity(double delta)
+	{
+		float verticalAcceleration = Gravity * (float)delta;
+		float halfVerticalAcceleration = verticalAcceleration / 2.0f;
+
+		// Note that we only apply half the velocity to the character velocity
+		_character.Velocity = Velocity with { Y = Velocity.Y + halfVerticalAcceleration };
+
+		Velocity = Velocity with { Y = Velocity.Y + verticalAcceleration };
+	}
+
+	public virtual void Grounded()
+	{
+		Velocity = Velocity with { Y = 0 };
+		_character.Velocity = Velocity;
+	}
 }
