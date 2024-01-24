@@ -121,7 +121,6 @@ public abstract partial class CharacterMoveComponent : Node
 	{
 		// TODO Decelerate faster than we accelerate
 		float horizontalVelocity = Mathf.MoveToward(Velocity.X, WantedMovement(), MoveAcceleration);
-		// float horizontalVelocity = WantedMovement();
 		Velocity = Velocity with { X = horizontalVelocity };
 		_character.Velocity = Velocity;
 	}
@@ -148,9 +147,20 @@ public abstract partial class CharacterMoveComponent : Node
 		_character.Velocity = Velocity with { Y = Velocity.Y + halfVerticalAcceleration };
 
 		Velocity = Velocity with { Y = Velocity.Y + verticalAcceleration };
+
+		GD.Print("\n--- Apply Gravity ---");
+		GD.Print("Character Velocity: ", _character.Velocity);
+		GD.Print("Own Velocity: ", Velocity);
+		GD.Print("------\n");
 	}
 
 	public virtual void Grounded()
+	{
+		Velocity = Velocity with { Y = 0 };
+		_character.Velocity = Velocity;
+	}
+
+	public virtual void HitCeiling()
 	{
 		Velocity = Velocity with { Y = 0 };
 		_character.Velocity = Velocity;

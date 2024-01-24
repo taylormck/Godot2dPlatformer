@@ -416,5 +416,6 @@ script = ExtResource("7_j1ab4")
 script = ExtResource("7_j1ab4")
 
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="OnAirborneStateProcessPhysics"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/DoubleJump" to="." method="OnDoubleDumpEnabledStatePhysicsProcess"]

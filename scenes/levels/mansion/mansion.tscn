@@ -18,8 +18,10 @@ region_rect = Rect2(-2, -76, 640, 360)
 position = Vector2(50, 44)
 
 [node name="StateChartDebugger" parent="." index="2" instance=ExtResource("4_aepiv")]
+visible = false
 offset_left = 290.0
 offset_top = -3.0
 offset_right = 635.0
 offset_bottom = 220.0
+enabled = false
 initial_node_to_watch = NodePath("../Player")

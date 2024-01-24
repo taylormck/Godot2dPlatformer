@@ -78,4 +78,13 @@ public partial class Player : CharacterBody2D
 			_moveComponent.ApplyDoubleJump();
 		}
 	}
+
+	public void OnAirborneStateProcessPhysics(double delta)
+	{
+		if (IsOnCeiling())
+		{
+			_moveComponent.HitCeiling();
+			_moveComponent.ApplyGravity(delta);
+		}
+	}
 }
