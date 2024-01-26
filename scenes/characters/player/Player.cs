@@ -52,11 +52,17 @@ public partial class Player : CharacterBody2D
 		if (IsOnFloor())
 		{
 			_stateChart.SendEvent("grounded");
-			_moveComponent.Grounded();
+			_moveComponent.ClearVerticalVelocity();
 		}
 		else
 		{
 			_stateChart.SendEvent("airborne");
+
+			if (IsOnCeiling())
+			{
+				_moveComponent.ClearVerticalVelocity();
+			}
+
 			_moveComponent.ApplyGravity(delta);
 		}
 	}
@@ -76,15 +82,6 @@ public partial class Player : CharacterBody2D
 		{
 			_stateChart.SendEvent("double_jump");
 			_moveComponent.ApplyDoubleJump();
-		}
-	}
-
-	public void OnAirborneStateProcessPhysics(double delta)
-	{
-		if (IsOnCeiling())
-		{
-			_moveComponent.HitCeiling();
-			_moveComponent.ApplyGravity(delta);
 		}
 	}
 }

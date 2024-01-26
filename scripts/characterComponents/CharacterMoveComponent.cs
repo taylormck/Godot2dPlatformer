@@ -143,24 +143,17 @@ public abstract partial class CharacterMoveComponent : Node
 		float verticalAcceleration = Gravity * (float)delta;
 		float halfVerticalAcceleration = verticalAcceleration / 2.0f;
 
-		// Note that we only apply half the velocity to the character velocity
+		// Note that we only apply half the velocity to the character velocity.
+		// This is the Verlet approximation. We add half now, but keep track
+		// of the full acceleration in the local Velocity. In the next frame,
+		// we'll add the remaining half of this frame's acceleration, as well
+		// as half of the next frame's acceleration
 		_character.Velocity = Velocity with { Y = Velocity.Y + halfVerticalAcceleration };
 
 		Velocity = Velocity with { Y = Velocity.Y + verticalAcceleration };
-
-		GD.Print("\n--- Apply Gravity ---");
-		GD.Print("Character Velocity: ", _character.Velocity);
-		GD.Print("Own Velocity: ", Velocity);
-		GD.Print("------\n");
 	}
 
-	public virtual void Grounded()
-	{
-		Velocity = Velocity with { Y = 0 };
-		_character.Velocity = Velocity;
-	}
-
-	public virtual void HitCeiling()
+	public virtual void ClearVerticalVelocity()
 	{
 		Velocity = Velocity with { Y = 0 };
 		_character.Velocity = Velocity;
