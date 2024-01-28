@@ -6,7 +6,8 @@ public partial class Player : CharacterBody2D
 {
 
 	private AnimatedSprite2D _animations;
-	private PlayerMoveComponent _moveComponent;
+	private PlatformerMoveComponent _moveComponent;
+	private PlayerController _controller;
 	private Sprite2D _sprite;
 	private AnimationTree _animationTree;
 	private StateChart _stateChart;
@@ -17,13 +18,14 @@ public partial class Player : CharacterBody2D
 		_animationTree = GetNode<AnimationTree>("AnimationTree");
 		_animationTree.Active = true;
 
-		_moveComponent = GetNode<PlayerMoveComponent>("PlayerMoveComponent");
+		_moveComponent = GetNode<PlatformerMoveComponent>("PlatformerMoveComponent");
+		_controller = GetNode<PlayerController>("PlayerController");
 		_stateChart = StateChart.Of(GetNode("StateChart"));
 	}
 
 	public override void _Process(double delta)
 	{
-		float direction = _moveComponent.WantedMovement();
+		float direction = _controller.WantedMovement();
 		_animationTree.Set("parameters/Move/blend_position", direction);
 
 		if (direction < 0)
@@ -38,11 +40,10 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		float wantedHorizontalVelocity = _moveComponent.WantedMovement();
+		float wantedHorizontalVelocity = _controller.WantedMovement();
 
-		_moveComponent.SetHorizontalVelocity();
-
-		MoveAndSlide();
+		_moveComponent.UpdateHorizontalVelocity(wantedHorizontalVelocity);
+		_moveComponent.Move();
 
 		if (Math.Abs(wantedHorizontalVelocity) > 0.005)
 			_stateChart.SendEvent("moving");
@@ -52,36 +53,58 @@ public partial class Player : CharacterBody2D
 		if (IsOnFloor())
 		{
 			_stateChart.SendEvent("grounded");
-			_moveComponent.ClearVerticalVelocity();
 		}
 		else
 		{
 			_stateChart.SendEvent("airborne");
-
-			if (IsOnCeiling())
-			{
-				_moveComponent.ClearVerticalVelocity();
-			}
-
-			_moveComponent.ApplyGravity(delta);
 		}
+
+		_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
+	}
+
+	public void OnAirborneStateEntered()
+	{
+		_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
+	}
+
+	public void OnAirborneStatePhysicsProcess(double delta)
+	{
+		if (!_controller.IsJumpHeld())
+			_stateChart.SendEvent("fall");
 	}
 
 	public void OnJumpEnabledStatePhysicsProcess(double delta)
 	{
-		if (_moveComponent.WantsJump())
+		if (_controller.IsJumpWanted())
 		{
 			_stateChart.SendEvent("jump");
-			_moveComponent.ApplyJump();
+			_moveComponent.ApplyFirstJump();
+			_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 		}
 	}
 
 	public void OnDoubleDumpEnabledStatePhysicsProcess(double delta)
 	{
-		if (_moveComponent.WantsJump())
+		if (_controller.IsJumpWanted())
 		{
-			_stateChart.SendEvent("double_jump");
+			_stateChart.SendEvent("jump");
 			_moveComponent.ApplyDoubleJump();
+			_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 		}
+	}
+
+	public void OnRisingStatePhysicsProcessing(double delta)
+	{
+		_moveComponent.ApplyJumpGravity(delta);
+	}
+
+	public void OnFloatingStatePhysicsProcessing(double delta)
+	{
+		_moveComponent.ApplyFloatGravity(delta);
+	}
+
+	public void OnFallingStatePhysicsProcessing(double delta)
+	{
+		_moveComponent.ApplyFallGravity(delta);
 	}
 }

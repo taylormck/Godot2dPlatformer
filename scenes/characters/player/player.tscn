@@ -1,13 +1,15 @@
-[gd_scene load_steps=30 format=3 uid="uid://bk7exhilw61bg"]
+[gd_scene load_steps=33 format=3 uid="uid://bk7exhilw61bg"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/Player.cs" id="1_wx4jg"]
 [ext_resource type="Texture2D" uid="uid://hxh6k5rshr5d" path="res://thirdPartyAssets/sprites/PitayaBase.png" id="2_2xx0l"]
+[ext_resource type="Script" path="res://scenes/characters/player/PlayerController.cs" id="3_nanr4"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/state_chart.gd" id="4_c7b7j"]
+[ext_resource type="Script" path="res://scripts/moveComponents/PlatformerMoveComponent.cs" id="4_gvadb"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/parallel_state.gd" id="5_30d6h"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/compound_state.gd" id="6_aubsr"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/atomic_state.gd" id="7_j1ab4"]
-[ext_resource type="Script" path="res://scenes/characters/player/PlayerMoveComponent.cs" id="7_ks8ta"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/transition.gd" id="8_20j3p"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/expression_guard.gd" id="10_y112e"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4dbf3"]
 radius = 22.0
@@ -303,9 +305,14 @@ states/jump/node = SubResource("AnimationNodeAnimation_nco53")
 states/jump/position = Vector2(389, 82)
 transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_wid5m"), "Move", "jump", SubResource("AnimationNodeStateMachineTransition_3fstx"), "jump", "air", SubResource("AnimationNodeStateMachineTransition_8wwe2"), "jump", "Move", SubResource("AnimationNodeStateMachineTransition_vphxk"), "air", "Move", SubResource("AnimationNodeStateMachineTransition_xkbjy"), "Move", "air", SubResource("AnimationNodeStateMachineTransition_280v4"), "air", "jump", SubResource("AnimationNodeStateMachineTransition_kouix")]
 
+[sub_resource type="Resource" id="Resource_snkhb"]
+script = ExtResource("10_y112e")
+expression = "vertical_velocity > 0"
+
 [node name="Player" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
 collision_mask = 2
+slide_on_ceiling = false
 script = ExtResource("1_wx4jg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -333,15 +340,23 @@ tree_root = SubResource("AnimationNodeStateMachine_dg5os")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Move/blend_position = -0.00414938
 
-[node name="PlayerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
-script = ExtResource("7_ks8ta")
+[node name="PlayerController" type="Node" parent="."]
+script = ExtResource("3_nanr4")
+
+[node name="PlatformerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
+script = ExtResource("4_gvadb")
 _character = NodePath("..")
 MoveSpeed = 12
-MoveAcceleration = 3
+MoveAcceleration = 2
+MoveDeceleration = 3
 JumpHeight = 6
-JumpDistance = 4
-DoubleJumpHeight = 4
+JumpDistanceToPeak = 3
+JumpDistanceFromPeakToGround = 2
+DoubleJumpHeight = 3
 DoubleJumpDistance = 2
+JumpPeakFloatDistance = 2
+JumpPeakFloatSpeed = 5
+MaximumFallSpeed = 60
 
 [node name="StateChart" type="Node" parent="."]
 script = ExtResource("4_c7b7j")
@@ -397,17 +412,28 @@ script = ExtResource("7_j1ab4")
 [node name="On Double Jump" type="Node" parent="StateChart/Root/Movement/Airborne/Jumpability/DoubleJump"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../CantJump")
-event = &"double_jump"
+event = &"jump"
 
 [node name="CantJump" type="Node" parent="StateChart/Root/Movement/Airborne/Jumpability"]
 script = ExtResource("7_j1ab4")
 
 [node name="FlightSection" type="Node" parent="StateChart/Root/Movement/Airborne"]
 script = ExtResource("6_aubsr")
-initial_state = NodePath("Falling")
+initial_state = NodePath("Rising")
 
 [node name="Rising" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
+
+[node name="On Peak Reached" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Falling")
+event = &"airborne"
+guard = SubResource("Resource_snkhb")
+
+[node name="On Jump Released" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Falling")
+event = &"fall"
 
 [node name="Floating" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
@@ -415,6 +441,16 @@ script = ExtResource("7_j1ab4")
 [node name="Falling" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
+[node name="To Rising" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Falling"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Rising")
+event = &"jump"
+
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="OnAirborneStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/DoubleJump" to="." method="OnDoubleDumpEnabledStatePhysicsProcess"]
+[connection signal="state_entered" from="StateChart/Root/Movement/Airborne/FlightSection" to="." method="OnAirborneStateEntered"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Rising" to="." method="OnRisingStatePhysicsProcessing"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Floating" to="." method="OnFloatingStatePhysicsProcessing"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Falling" to="." method="OnFallingStatePhysicsProcessing"]
