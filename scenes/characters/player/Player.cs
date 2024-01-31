@@ -45,21 +45,16 @@ public partial class Player : CharacterBody2D
 		_moveComponent.UpdateHorizontalVelocity(wantedHorizontalVelocity);
 		_moveComponent.Move();
 
-		if (Math.Abs(wantedHorizontalVelocity) > 0.005)
-			_stateChart.SendEvent("moving");
-		else
-			_stateChart.SendEvent("idle");
-
-		if (IsOnFloor())
-		{
-			_stateChart.SendEvent("grounded");
-		}
-		else
-		{
-			_stateChart.SendEvent("airborne");
-		}
+		_stateChart.SendEvent(Math.Abs(wantedHorizontalVelocity) > 0.005 ? "moving" : "idle");
+		_stateChart.SendEvent(IsOnFloor() ? "grounded" : "airborne");
 
 		_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
+	}
+
+	public void OnGroundedStatePhysicsProcess(double delta)
+	{
+		if (IsOnFloor())
+			_moveComponent.ClearVerticalVelocity();
 	}
 
 	public void OnAirborneStateEntered()
@@ -71,6 +66,9 @@ public partial class Player : CharacterBody2D
 	{
 		if (!_controller.IsJumpHeld())
 			_stateChart.SendEvent("fall");
+
+		if (IsOnFloor() || IsOnCeiling())
+			_moveComponent.ClearVerticalVelocity();
 	}
 
 	public void OnJumpEnabledStatePhysicsProcess(double delta)

@@ -312,7 +312,6 @@ expression = "vertical_velocity > 0"
 [node name="Player" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
 collision_mask = 2
-slide_on_ceiling = false
 script = ExtResource("1_wx4jg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -446,6 +445,7 @@ script = ExtResource("8_20j3p")
 to = NodePath("../../Rising")
 event = &"jump"
 
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundedStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="OnAirborneStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnJumpEnabledStatePhysicsProcess"]
