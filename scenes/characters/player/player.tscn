@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://bk7exhilw61bg"]
+[gd_scene load_steps=34 format=3 uid="uid://bk7exhilw61bg"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/Player.cs" id="1_wx4jg"]
 [ext_resource type="Texture2D" uid="uid://hxh6k5rshr5d" path="res://thirdPartyAssets/sprites/PitayaBase.png" id="2_2xx0l"]
@@ -307,6 +307,10 @@ transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition
 
 [sub_resource type="Resource" id="Resource_snkhb"]
 script = ExtResource("10_y112e")
+expression = "vertical_velocity > -85"
+
+[sub_resource type="Resource" id="Resource_gcoun"]
+script = ExtResource("10_y112e")
 expression = "vertical_velocity > 0"
 
 [node name="Player" type="CharacterBody2D"]
@@ -345,17 +349,18 @@ script = ExtResource("3_nanr4")
 [node name="PlatformerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
 script = ExtResource("4_gvadb")
 _character = NodePath("..")
-MoveSpeed = 12
-MoveAcceleration = 2
-MoveDeceleration = 3
+MoveSpeed = 14
+MoveAcceleration = 4
+MoveDeceleration = 5
 JumpHeight = 6
-JumpDistanceToPeak = 3
-JumpDistanceFromPeakToGround = 2
+JumpDistanceToPeak = 4
+JumpDistanceFromPeakToGround = 3
 DoubleJumpHeight = 3
 DoubleJumpDistance = 2
+JumpPeakFloatHeight = 1
 JumpPeakFloatDistance = 2
 JumpPeakFloatSpeed = 5
-MaximumFallSpeed = 60
+MaximumFallSpeed = 40
 
 [node name="StateChart" type="Node" parent="."]
 script = ExtResource("4_c7b7j")
@@ -423,9 +428,9 @@ initial_state = NodePath("Rising")
 [node name="Rising" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
-[node name="On Peak Reached" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
+[node name="Near Top of Jump" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
 script = ExtResource("8_20j3p")
-to = NodePath("../../Falling")
+to = NodePath("../../Floating")
 event = &"airborne"
 guard = SubResource("Resource_snkhb")
 
@@ -437,10 +442,21 @@ event = &"fall"
 [node name="Floating" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
+[node name="On Peak Reached" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Floating"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Falling")
+event = &"airborne"
+guard = SubResource("Resource_gcoun")
+
+[node name="On Jump Released" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Floating"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Falling")
+event = &"fall"
+
 [node name="Falling" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
-[node name="To Rising" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Falling"]
+[node name="On Jumping" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Falling"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../Rising")
 event = &"jump"

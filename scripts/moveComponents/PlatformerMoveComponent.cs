@@ -100,6 +100,18 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
+	private int _jumpPeakFloatHeight = 1;
+	[Export]
+	public int JumpPeakFloatHeight
+	{
+		get => _jumpPeakFloatHeight * TileSize;
+		set
+		{
+			_jumpPeakFloatHeight = value;
+			RecalculateDependentProperties();
+		}
+	}
+
 	private int _jumpPeakFloatDistance = 2;
 	[Export]
 	public int JumpPeakFloatDistance
@@ -149,7 +161,7 @@ public partial class PlatformerMoveComponent : Node
 		JumpVerticalVelocity = CalculateJumpVerticalVelocity(MoveSpeed, JumpHeight, JumpDistanceToPeak);
 		DoubleJumpVerticalVelocity = CalculateJumpVerticalVelocity(MoveSpeed, DoubleJumpHeight, DoubleJumpDistance);
 		JumpGravity = CalculateGravity(MoveSpeed, JumpHeight, JumpDistanceToPeak);
-		FloatGravity = CalculateGravity(JumpPeakFloatSpeed, 0.0f, JumpPeakFloatDistance);
+		FloatGravity = CalculateGravity(JumpPeakFloatSpeed, JumpPeakFloatHeight, JumpPeakFloatDistance);
 		FallGravity = CalculateGravity(MoveSpeed, JumpHeight, JumpDistanceFromPeakToGround);
 	}
 
@@ -167,7 +179,7 @@ public partial class PlatformerMoveComponent : Node
 		// g = (-2 * h * vx ^ 2) / (xh ^ 2)
 		// We return positive instead of negative because Y is positive going down
 		// in 2D.
-		return 2 * JumpHeight * (float)Math.Pow(moveSpeed, 2) / (float)Math.Pow(jumpDistance, 2);
+		return 2 * jumpHeight * (float)Math.Pow(moveSpeed, 2) / (float)Math.Pow(jumpDistance, 2);
 	}
 
 	public override void _Ready()
