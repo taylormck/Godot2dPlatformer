@@ -154,7 +154,10 @@ public partial class PlatformerMoveComponent : Node
 	}
 
 	[Export]
-	public float CoyoteTimeDuration { get; set; } = 0.3f;
+	public float CoyoteTimeDuration { get; set; } = 0.2f;
+
+	[Export]
+	public float JumpQueueTimeDuration { get; set; } = 0.2f;
 
 	public float JumpVerticalVelocity { get; private set; }
 	public float DoubleJumpVerticalVelocity { get; private set; }

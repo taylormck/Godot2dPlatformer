@@ -355,6 +355,7 @@ BeginFloatingVelocity = -100.0
 BeginFallingVelocity = 100.0
 MaximumFallSpeed = 60.0
 CoyoteTimeDuration = 0.1
+JumpQueueTimeDuration = 0.1
 
 [node name="StateChart" type="Node" parent="."]
 script = ExtResource("4_c7b7j")
@@ -448,6 +449,7 @@ script = ExtResource("8_20j3p")
 to = NodePath("../../Rising")
 event = &"jump"
 
+[connection signal="state_entered" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundStateEntered"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundedStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="OnAirborneStatePhysicsProcess"]
@@ -455,6 +457,7 @@ event = &"jump"
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnCoyoteTimeStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/DoubleJump" to="." method="OnDoubleDumpEnabledStatePhysicsProcess"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CantJump" to="." method="OnCantJumpStatePhysicsProcess"]
 [connection signal="state_entered" from="StateChart/Root/Movement/Airborne/FlightSection" to="." method="OnAirborneStateEntered"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Rising" to="." method="OnRisingStatePhysicsProcessing"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Floating" to="." method="OnFloatingStatePhysicsProcessing"]

@@ -58,6 +58,19 @@ public partial class Player : CharacterBody2D
 		_moveComponent.Move();
 	}
 
+	public void OnGroundStateEntered()
+	{
+		_moveComponent.ClearVerticalVelocity();
+
+		if (!_jumpQueueTimer.IsStopped() && _jumpQueueTimer.TimeLeft > 0)
+		{
+			_stateChart.SendEvent("jump");
+			_moveComponent.ApplyFirstJump();
+		}
+
+		_jumpQueueTimer.Stop();
+	}
+
 	public void OnGroundedStatePhysicsProcess(double delta)
 	{
 		if (!IsOnFloor())
@@ -76,7 +89,7 @@ public partial class Player : CharacterBody2D
 		if (IsOnFloor())
 			_stateChart.SendEvent("grounded");
 
-		if (IsOnFloor() || IsOnCeiling())
+		if (IsOnCeiling())
 			_moveComponent.ClearVerticalVelocity();
 	}
 
@@ -107,6 +120,12 @@ public partial class Player : CharacterBody2D
 			_stateChart.SendEvent("jump");
 			_moveComponent.ApplyDoubleJump();
 		}
+	}
+
+	public void OnCantJumpStatePhysicsProcess(double delta)
+	{
+		if (_controller.IsJumpWanted())
+			_jumpQueueTimer.Start(_moveComponent.JumpQueueTimeDuration);
 	}
 
 	public void OnRisingStatePhysicsProcessing(double delta)
