@@ -11,9 +11,9 @@ public partial class PlatformerMoveComponent : Node
 
 	[ExportGroup("Movement Variables")]
 
-	private int _moveSpeed = 15;
+	private float _moveSpeed = 15;
 	[Export]
-	public int MoveSpeed
+	public float MoveSpeed
 	{
 		get => _moveSpeed * TileSize;
 		set
@@ -23,26 +23,26 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _moveAcceleration = 1;
+	private float _moveAcceleration = 1;
 	[Export]
-	public int MoveAcceleration
+	public float MoveAcceleration
 	{
 		get => _moveAcceleration * TileSize;
 		set => _moveAcceleration = value;
 	}
 
-	private int _moveDeceleration = 2;
+	private float _moveDeceleration = 2;
 	[Export]
-	public int MoveDeceleration
+	public float MoveDeceleration
 	{
 		get => _moveDeceleration * TileSize;
 		set => _moveDeceleration = value;
 	}
 
 	[ExportGroup("JumpProperties")]
-	private int _jumpHeight = 4;
+	private float _jumpHeight = 4;
 	[Export]
-	public int JumpHeight
+	public float JumpHeight
 	{
 		get => _jumpHeight * TileSize;
 		set
@@ -52,9 +52,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _jumpDistanceToPeak = 3;
+	private float _jumpDistanceToPeak = 3;
 	[Export]
-	public int JumpDistanceToPeak
+	public float JumpDistanceToPeak
 	{
 		get => _jumpDistanceToPeak * TileSize;
 		set
@@ -64,9 +64,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _jumpDistanceFromPeakToGround = 1;
+	private float _jumpDistanceFromPeakToGround = 1;
 	[Export]
-	public int JumpDistanceFromPeakToGround
+	public float JumpDistanceFromPeakToGround
 	{
 		get => _jumpDistanceFromPeakToGround * TileSize;
 		set
@@ -76,9 +76,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _doubleJumpHeight = 2;
+	private float _doubleJumpHeight = 2;
 	[Export]
-	public int DoubleJumpHeight
+	public float DoubleJumpHeight
 	{
 		get => _doubleJumpHeight * TileSize;
 		set
@@ -88,9 +88,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _doubleJumpDistance = 2;
+	private float _doubleJumpDistance = 2;
 	[Export]
-	public int DoubleJumpDistance
+	public float DoubleJumpDistance
 	{
 		get => _doubleJumpDistance * TileSize;
 		set
@@ -100,9 +100,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _jumpPeakFloatHeight = 1;
+	private float _jumpPeakFloatHeight = 1;
 	[Export]
-	public int JumpPeakFloatHeight
+	public float JumpPeakFloatHeight
 	{
 		get => _jumpPeakFloatHeight * TileSize;
 		set
@@ -112,9 +112,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _jumpPeakFloatDistance = 2;
+	private float _jumpPeakFloatDistance = 2;
 	[Export]
-	public int JumpPeakFloatDistance
+	public float JumpPeakFloatDistance
 	{
 		get => _jumpPeakFloatDistance * TileSize;
 		set
@@ -124,9 +124,9 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _jumpPeakFloatSpeed = 4;
+	private float _jumpPeakFloatSpeed = 4;
 	[Export]
-	public int JumpPeakFloatSpeed
+	public float JumpPeakFloatSpeed
 	{
 		get => _jumpPeakFloatSpeed * TileSize;
 		set
@@ -136,9 +136,15 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private int _maximumFallSpeed = 4;
 	[Export]
-	public int MaximumFallSpeed
+	public float BeginFloatingVelocity { get; set; } = 75;
+
+	[Export]
+	public float BeginFallingVelocity { get; set; } = 0;
+
+	private float _maximumFallSpeed = 50;
+	[Export]
+	public float MaximumFallSpeed
 	{
 		get => _maximumFallSpeed * TileSize;
 		set
@@ -147,11 +153,15 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
+	[Export]
+	public float CoyoteTimeDuration { get; set; } = 0.3f;
+
 	public float JumpVerticalVelocity { get; private set; }
 	public float DoubleJumpVerticalVelocity { get; private set; }
 	public float JumpGravity { get; private set; }
 	public float FloatGravity { get; private set; }
 	public float FallGravity { get; private set; }
+
 
 	private Vector2 Velocity { get; set; } = Vector2.Zero;
 

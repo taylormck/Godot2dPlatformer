@@ -11,6 +11,8 @@ public partial class Player : CharacterBody2D
 	private Sprite2D _sprite;
 	private AnimationTree _animationTree;
 	private StateChart _stateChart;
+	private Timer _coyoteTimer;
+	private Timer _jumpQueueTimer;
 
 	public override void _Ready()
 	{
@@ -21,6 +23,16 @@ public partial class Player : CharacterBody2D
 		_moveComponent = GetNode<PlatformerMoveComponent>("PlatformerMoveComponent");
 		_controller = GetNode<PlayerController>("PlayerController");
 		_stateChart = StateChart.Of(GetNode("StateChart"));
+
+		#region Initialize timers
+		_coyoteTimer = new Timer();
+		_coyoteTimer.OneShot = true;
+		AddChild(_coyoteTimer);
+
+		_jumpQueueTimer = new Timer();
+		_jumpQueueTimer.OneShot = true;
+		AddChild(_jumpQueueTimer);
+		#endregion
 	}
 
 	public override void _Process(double delta)
@@ -44,22 +56,16 @@ public partial class Player : CharacterBody2D
 
 		_moveComponent.UpdateHorizontalVelocity(wantedHorizontalVelocity);
 		_moveComponent.Move();
-
-		_stateChart.SendEvent(Math.Abs(wantedHorizontalVelocity) > 0.005 ? "moving" : "idle");
-		_stateChart.SendEvent(IsOnFloor() ? "grounded" : "airborne");
-
-		_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 	}
 
 	public void OnGroundedStatePhysicsProcess(double delta)
 	{
-		if (IsOnFloor())
-			_moveComponent.ClearVerticalVelocity();
+		if (!IsOnFloor())
+			_stateChart.SendEvent("airborne");
 	}
 
 	public void OnAirborneStateEntered()
 	{
-		_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 	}
 
 	public void OnAirborneStatePhysicsProcess(double delta)
@@ -67,8 +73,22 @@ public partial class Player : CharacterBody2D
 		if (!_controller.IsJumpHeld())
 			_stateChart.SendEvent("fall");
 
+		if (IsOnFloor())
+			_stateChart.SendEvent("grounded");
+
 		if (IsOnFloor() || IsOnCeiling())
 			_moveComponent.ClearVerticalVelocity();
+	}
+
+	public void OnCoyoteTimeStateEntered()
+	{
+		_coyoteTimer.Start(_moveComponent.CoyoteTimeDuration);
+	}
+
+	public void OnCoyoteTimeStatePhysicsProcess(double delta)
+	{
+		if (_coyoteTimer.TimeLeft <= 0)
+			_stateChart.SendEvent("coyote_time_expired");
 	}
 
 	public void OnJumpEnabledStatePhysicsProcess(double delta)
@@ -77,7 +97,6 @@ public partial class Player : CharacterBody2D
 		{
 			_stateChart.SendEvent("jump");
 			_moveComponent.ApplyFirstJump();
-			_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 		}
 	}
 
@@ -87,18 +106,23 @@ public partial class Player : CharacterBody2D
 		{
 			_stateChart.SendEvent("jump");
 			_moveComponent.ApplyDoubleJump();
-			_stateChart.SetExpressionProperty("vertical_velocity", Velocity.Y);
 		}
 	}
 
 	public void OnRisingStatePhysicsProcessing(double delta)
 	{
 		_moveComponent.ApplyJumpGravity(delta);
+
+		if (Velocity.Y > _moveComponent.BeginFloatingVelocity)
+			_stateChart.SendEvent("float");
 	}
 
 	public void OnFloatingStatePhysicsProcessing(double delta)
 	{
 		_moveComponent.ApplyFloatGravity(delta);
+
+		if (Velocity.Y > _moveComponent.BeginFallingVelocity)
+			_stateChart.SendEvent("fall");
 	}
 
 	public void OnFallingStatePhysicsProcessing(double delta)

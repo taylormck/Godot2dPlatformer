@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://bk7exhilw61bg"]
+[gd_scene load_steps=31 format=3 uid="uid://bk7exhilw61bg"]
 
 [ext_resource type="Script" path="res://scenes/characters/player/Player.cs" id="1_wx4jg"]
 [ext_resource type="Texture2D" uid="uid://hxh6k5rshr5d" path="res://thirdPartyAssets/sprites/PitayaBase.png" id="2_2xx0l"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://addons/godot_state_charts/compound_state.gd" id="6_aubsr"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/atomic_state.gd" id="7_j1ab4"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/transition.gd" id="8_20j3p"]
-[ext_resource type="Script" path="res://addons/godot_state_charts/expression_guard.gd" id="10_y112e"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4dbf3"]
 radius = 22.0
@@ -305,14 +304,6 @@ states/jump/node = SubResource("AnimationNodeAnimation_nco53")
 states/jump/position = Vector2(389, 82)
 transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_wid5m"), "Move", "jump", SubResource("AnimationNodeStateMachineTransition_3fstx"), "jump", "air", SubResource("AnimationNodeStateMachineTransition_8wwe2"), "jump", "Move", SubResource("AnimationNodeStateMachineTransition_vphxk"), "air", "Move", SubResource("AnimationNodeStateMachineTransition_xkbjy"), "Move", "air", SubResource("AnimationNodeStateMachineTransition_280v4"), "air", "jump", SubResource("AnimationNodeStateMachineTransition_kouix")]
 
-[sub_resource type="Resource" id="Resource_snkhb"]
-script = ExtResource("10_y112e")
-expression = "vertical_velocity > -85"
-
-[sub_resource type="Resource" id="Resource_gcoun"]
-script = ExtResource("10_y112e")
-expression = "vertical_velocity > 0"
-
 [node name="Player" type="CharacterBody2D"]
 scale = Vector2(0.5, 0.5)
 collision_mask = 2
@@ -349,18 +340,21 @@ script = ExtResource("3_nanr4")
 [node name="PlatformerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
 script = ExtResource("4_gvadb")
 _character = NodePath("..")
-MoveSpeed = 14
-MoveAcceleration = 4
-MoveDeceleration = 5
-JumpHeight = 6
-JumpDistanceToPeak = 4
-JumpDistanceFromPeakToGround = 3
-DoubleJumpHeight = 3
-DoubleJumpDistance = 2
-JumpPeakFloatHeight = 1
-JumpPeakFloatDistance = 2
-JumpPeakFloatSpeed = 5
-MaximumFallSpeed = 40
+MoveSpeed = 15.0
+MoveAcceleration = 5.0
+MoveDeceleration = 7.0
+JumpHeight = 6.0
+JumpDistanceToPeak = 4.0
+JumpDistanceFromPeakToGround = 2.0
+DoubleJumpHeight = 3.0
+DoubleJumpDistance = 2.0
+JumpPeakFloatHeight = 1.0
+JumpPeakFloatDistance = 2.0
+JumpPeakFloatSpeed = 17.0
+BeginFloatingVelocity = -100.0
+BeginFallingVelocity = 100.0
+MaximumFallSpeed = 60.0
+CoyoteTimeDuration = 0.1
 
 [node name="StateChart" type="Node" parent="."]
 script = ExtResource("4_c7b7j")
@@ -408,7 +402,7 @@ event = &"jump"
 [node name="On Expiration" type="Node" parent="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../DoubleJump")
-delay_seconds = 0.2
+event = &"coyote_time_expired"
 
 [node name="DoubleJump" type="Node" parent="StateChart/Root/Movement/Airborne/Jumpability"]
 script = ExtResource("7_j1ab4")
@@ -428,11 +422,10 @@ initial_state = NodePath("Rising")
 [node name="Rising" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
-[node name="Near Top of Jump" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
+[node name="On Float" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../Floating")
-event = &"airborne"
-guard = SubResource("Resource_snkhb")
+event = &"float"
 
 [node name="On Jump Released" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Rising"]
 script = ExtResource("8_20j3p")
@@ -442,13 +435,7 @@ event = &"fall"
 [node name="Floating" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
-[node name="On Peak Reached" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Floating"]
-script = ExtResource("8_20j3p")
-to = NodePath("../../Falling")
-event = &"airborne"
-guard = SubResource("Resource_gcoun")
-
-[node name="On Jump Released" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Floating"]
+[node name="On Jump Released or Expiration" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Floating"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../Falling")
 event = &"fall"
@@ -456,7 +443,7 @@ event = &"fall"
 [node name="Falling" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection"]
 script = ExtResource("7_j1ab4")
 
-[node name="On Jumping" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Falling"]
+[node name="On Jump" type="Node" parent="StateChart/Root/Movement/Airborne/FlightSection/Falling"]
 script = ExtResource("8_20j3p")
 to = NodePath("../../Rising")
 event = &"jump"
@@ -464,7 +451,9 @@ event = &"jump"
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundedStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne" to="." method="OnAirborneStatePhysicsProcess"]
+[connection signal="state_entered" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnCoyoteTimeStateEntered"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnJumpEnabledStatePhysicsProcess"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/CoyoteTime" to="." method="OnCoyoteTimeStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/Jumpability/DoubleJump" to="." method="OnDoubleDumpEnabledStatePhysicsProcess"]
 [connection signal="state_entered" from="StateChart/Root/Movement/Airborne/FlightSection" to="." method="OnAirborneStateEntered"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Rising" to="." method="OnRisingStatePhysicsProcessing"]
