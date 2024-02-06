@@ -13,6 +13,44 @@ public partial class Player : CharacterBody2D
 	private StateChart _stateChart;
 	private Timer _coyoteTimer;
 	private Timer _jumpQueueTimer;
+	private Timer _wallJumpControlTimer;
+	private float _wallJumpControlTimeout = 0.2f;
+	private RayCast2D _wallDetector;
+
+	// Essentially, the X component of Vector2.Right or Vector2.Left. Since
+	// we won't need the Y component, there's no need to keep the full vector
+	// around.
+	private float _facing = 1;
+
+	private void UpdateWallDetector()
+	{
+		// NOTE: Does this math get handled at compile time? I hope so, but I'm
+		// not 100% sure.
+		_wallDetector.Rotation = (float)Math.PI / 2.0f * _facing;
+	}
+
+	private bool IsGrabbingWall()
+	{
+		return _wallDetector.IsColliding() && Math.Sign(_controller.WantedMovement()) == Math.Sign(_facing);
+	}
+
+	private float LerpedMovement()
+	{
+		float rawMovement = _controller.WantedMovement() * _moveComponent.MoveSpeed;
+
+		if (_wallJumpControlTimer.IsStopped())
+		{
+			return rawMovement;
+		}
+
+		// If the timer is active, we've recently wall jumped, and need to
+		// reduce movement input.
+		float ratioOfTimeoutExpired = (_wallJumpControlTimeout - (float)_wallJumpControlTimer.TimeLeft) / _wallJumpControlTimeout;
+		float lerpCoefficient = (float)Math.Sin(Math.PI / 2 * ratioOfTimeoutExpired);
+		float lerpedMovement = Velocity.X + (rawMovement - Velocity.X) * lerpCoefficient;
+
+		return lerpedMovement;
+	}
 
 	public override void _Ready()
 	{
@@ -24,6 +62,9 @@ public partial class Player : CharacterBody2D
 		_controller = GetNode<PlayerController>("PlayerController");
 		_stateChart = StateChart.Of(GetNode("StateChart"));
 
+		_wallDetector = GetNode<RayCast2D>("WallDetector");
+		UpdateWallDetector();
+
 		#region Initialize timers
 		_coyoteTimer = new Timer();
 		_coyoteTimer.OneShot = true;
@@ -32,19 +73,24 @@ public partial class Player : CharacterBody2D
 		_jumpQueueTimer = new Timer();
 		_jumpQueueTimer.OneShot = true;
 		AddChild(_jumpQueueTimer);
+
+		_wallJumpControlTimer = new Timer();
+		_wallJumpControlTimer.OneShot = true;
+		AddChild(_wallJumpControlTimer);
 		#endregion
+
 	}
 
 	public override void _Process(double delta)
 	{
-		float direction = _controller.WantedMovement();
-		_animationTree.Set("parameters/Move/blend_position", direction);
+		_animationTree.Set("parameters/Move/blend_position", Velocity.X);
 
-		if (direction < 0)
+		// Update the sprite direction based on the facing
+		if (_facing < 0)
 		{
 			_sprite.FlipH = true;
 		}
-		else if (direction > 0)
+		else if (_facing > 0)
 		{
 			_sprite.FlipH = false;
 		}
@@ -52,9 +98,17 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		float wantedHorizontalVelocity = _controller.WantedMovement();
+		// Apply the horizontal movement using the move component
+		_moveComponent.UpdateHorizontalVelocity(LerpedMovement());
 
-		_moveComponent.UpdateHorizontalVelocity(wantedHorizontalVelocity);
+		// Update facing
+		if (Velocity.X > 0)
+			_facing = 1;
+		else if (Velocity.X < 0)
+			_facing = -1;
+
+		UpdateWallDetector();
+
 		_moveComponent.Move();
 	}
 
@@ -91,6 +145,9 @@ public partial class Player : CharacterBody2D
 
 		if (IsOnCeiling())
 			_moveComponent.ClearVerticalVelocity();
+
+		if (IsGrabbingWall())
+			_stateChart.SendEvent("climb");
 	}
 
 	public void OnCoyoteTimeStateEntered()
@@ -147,5 +204,28 @@ public partial class Player : CharacterBody2D
 	public void OnFallingStatePhysicsProcessing(double delta)
 	{
 		_moveComponent.ApplyFallGravity(delta);
+	}
+
+	public void OnClimbingStateEntered()
+	{
+		_moveComponent.ClearVerticalVelocity();
+	}
+
+	public void OnClimbingStatePhysicsProcess(double delta)
+	{
+		if (IsGrabbingWall())
+		{
+			if (_controller.IsJumpWanted())
+			{
+				_moveComponent.ImmediatelyUpdateHorizontalVelocity(_controller.WantedMovement() * _facing);
+				_moveComponent.ApplyFirstJump();
+				_stateChart.SendEvent("jump");
+				_wallJumpControlTimer.Start(_wallJumpControlTimeout);
+			}
+		}
+		else
+		{
+			_stateChart.SendEvent("release_climb");
+		}
 	}
 }

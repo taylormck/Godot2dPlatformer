@@ -27,7 +27,7 @@ public partial class PlatformerMoveComponent : Node
 	[Export]
 	public float MoveAcceleration
 	{
-		get => _moveAcceleration * TileSize;
+		get => _moveAcceleration;
 		set => _moveAcceleration = value;
 	}
 
@@ -165,6 +165,9 @@ public partial class PlatformerMoveComponent : Node
 	public float FloatGravity { get; private set; }
 	public float FallGravity { get; private set; }
 
+	[Export]
+	public float WallJumpMovementControlAcceleration = 3.0f;
+
 
 	private Vector2 Velocity { get; set; } = Vector2.Zero;
 
@@ -198,6 +201,13 @@ public partial class PlatformerMoveComponent : Node
 	public override void _Ready()
 	{
 		RecalculateDependentProperties();
+	}
+
+	public void ImmediatelyUpdateHorizontalVelocity(float input)
+	{
+		float targetVelocity = input * MoveSpeed;
+		Velocity = Velocity with { X = targetVelocity };
+		_character.Velocity = Velocity;
 	}
 
 	public void UpdateHorizontalVelocity(float input)

@@ -317,8 +317,7 @@ vframes = 8
 frame = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(37, 55)
+position = Vector2(34, 54)
 shape = SubResource("CapsuleShape2D_4dbf3")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -333,6 +332,11 @@ libraries = {
 tree_root = SubResource("AnimationNodeStateMachine_dg5os")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Move/blend_position = -0.00414938
+
+[node name="WallDetector" type="RayCast2D" parent="."]
+position = Vector2(34, 54)
+target_position = Vector2(0, -24)
+collision_mask = 2
 
 [node name="PlayerController" type="Node" parent="."]
 script = ExtResource("3_nanr4")
@@ -387,6 +391,11 @@ script = ExtResource("5_30d6h")
 script = ExtResource("8_20j3p")
 to = NodePath("../../Grounded")
 event = &"grounded"
+
+[node name="On Climb" type="Node" parent="StateChart/Root/Movement/Airborne"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Climbing")
+event = &"climb"
 
 [node name="Jumpability" type="Node" parent="StateChart/Root/Movement/Airborne"]
 script = ExtResource("6_aubsr")
@@ -449,6 +458,19 @@ script = ExtResource("8_20j3p")
 to = NodePath("../../Rising")
 event = &"jump"
 
+[node name="Climbing" type="Node" parent="StateChart/Root/Movement"]
+script = ExtResource("7_j1ab4")
+
+[node name="On Letting Go" type="Node" parent="StateChart/Root/Movement/Climbing"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Airborne/Jumpability/DoubleJump")
+event = &"release_climb"
+
+[node name="On Jump" type="Node" parent="StateChart/Root/Movement/Climbing"]
+script = ExtResource("8_20j3p")
+to = NodePath("../../Airborne/Jumpability/DoubleJump")
+event = &"jump"
+
 [connection signal="state_entered" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundStateEntered"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnGroundedStatePhysicsProcess"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Grounded" to="." method="OnJumpEnabledStatePhysicsProcess"]
@@ -462,3 +484,5 @@ event = &"jump"
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Rising" to="." method="OnRisingStatePhysicsProcessing"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Floating" to="." method="OnFloatingStatePhysicsProcessing"]
 [connection signal="state_physics_processing" from="StateChart/Root/Movement/Airborne/FlightSection/Falling" to="." method="OnFallingStatePhysicsProcessing"]
+[connection signal="state_entered" from="StateChart/Root/Movement/Climbing" to="." method="OnClimbingStateEntered"]
+[connection signal="state_physics_processing" from="StateChart/Root/Movement/Climbing" to="." method="OnClimbingStatePhysicsProcess"]
