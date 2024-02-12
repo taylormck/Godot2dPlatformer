@@ -80,16 +80,13 @@ public partial class Player : CharacterBody2D
 		UpdateWallDetector();
 
 		#region Initialize timers
-		_coyoteTimer = new Timer();
-		_coyoteTimer.OneShot = true;
+		_coyoteTimer = new Timer() { OneShot = true };
 		AddChild(_coyoteTimer);
 
-		_jumpQueueTimer = new Timer();
-		_jumpQueueTimer.OneShot = true;
+		_jumpQueueTimer = new Timer() { OneShot = true };
 		AddChild(_jumpQueueTimer);
 
-		_wallJumpControlTimer = new Timer();
-		_wallJumpControlTimer.OneShot = true;
+		_wallJumpControlTimer = new Timer() { OneShot = true };
 		AddChild(_wallJumpControlTimer);
 		#endregion
 
