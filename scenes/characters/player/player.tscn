@@ -310,14 +310,14 @@ collision_mask = 2
 script = ExtResource("1_wx4jg")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(36, 33)
+position = Vector2(2, -76)
 texture = ExtResource("2_2xx0l")
 hframes = 16
 vframes = 8
 frame = 72
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(34, 54)
+position = Vector2(0, -52)
 shape = SubResource("CapsuleShape2D_4dbf3")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -334,7 +334,7 @@ anim_player = NodePath("../AnimationPlayer")
 parameters/Move/blend_position = -0.00414938
 
 [node name="WallDetector" type="RayCast2D" parent="."]
-position = Vector2(34, 54)
+position = Vector2(0, -52)
 target_position = Vector2(0, -24)
 collision_mask = 2
 
@@ -344,16 +344,16 @@ script = ExtResource("3_nanr4")
 [node name="PlatformerMoveComponent" type="Node" parent="." node_paths=PackedStringArray("_character")]
 script = ExtResource("4_gvadb")
 _character = NodePath("..")
-MoveSpeed = 15.0
-MoveAcceleration = 5.0
-MoveDeceleration = 7.0
+MoveSpeed = 20.0
+MoveAcceleration = 150.0
+MoveDeceleration = 200.0
 JumpHeight = 6.0
-JumpDistanceToPeak = 4.0
-JumpDistanceFromPeakToGround = 2.0
+JumpDistanceToPeak = 3.0
+JumpDistanceFromPeakToGround = 1.0
 DoubleJumpHeight = 3.0
 DoubleJumpDistance = 2.0
 JumpPeakFloatHeight = 1.0
-JumpPeakFloatDistance = 2.0
+JumpPeakFloatDistance = 4.0
 JumpPeakFloatSpeed = 17.0
 BeginFloatingVelocity = -100.0
 BeginFallingVelocity = 100.0
@@ -463,7 +463,7 @@ script = ExtResource("7_j1ab4")
 
 [node name="On Letting Go" type="Node" parent="StateChart/Root/Movement/Climbing"]
 script = ExtResource("8_20j3p")
-to = NodePath("../../Airborne/Jumpability/DoubleJump")
+to = NodePath("../../Airborne/Jumpability/CoyoteTime")
 event = &"release_climb"
 
 [node name="On Jump" type="Node" parent="StateChart/Root/Movement/Climbing"]

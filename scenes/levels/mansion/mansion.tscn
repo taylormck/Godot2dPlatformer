@@ -15,7 +15,7 @@ region_enabled = true
 region_rect = Rect2(-2, -76, 640, 360)
 
 [node name="Player" parent="." index="1" instance=ExtResource("2_ajc56")]
-position = Vector2(50, 44)
+position = Vector2(76, 330)
 
 [node name="StateChartDebugger" parent="." index="2" instance=ExtResource("4_aepiv")]
 visible = false

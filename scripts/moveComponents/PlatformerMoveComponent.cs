@@ -11,7 +11,7 @@ public partial class PlatformerMoveComponent : Node
 
 	[ExportGroup("Movement Variables")]
 
-	private float _moveSpeed = 15;
+	private float _moveSpeed = 4.0f;
 	[Export]
 	public float MoveSpeed
 	{
@@ -23,15 +23,15 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _moveAcceleration = 1;
+	private float _moveAcceleration = 10.0f;
 	[Export]
 	public float MoveAcceleration
 	{
-		get => _moveAcceleration;
+		get => _moveAcceleration * TileSize;
 		set => _moveAcceleration = value;
 	}
 
-	private float _moveDeceleration = 2;
+	private float _moveDeceleration = 15.0f;
 	[Export]
 	public float MoveDeceleration
 	{
@@ -40,7 +40,7 @@ public partial class PlatformerMoveComponent : Node
 	}
 
 	[ExportGroup("JumpProperties")]
-	private float _jumpHeight = 4;
+	private float _jumpHeight = 4.0f;
 	[Export]
 	public float JumpHeight
 	{
@@ -52,7 +52,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _jumpDistanceToPeak = 3;
+	private float _jumpDistanceToPeak = 3.0f;
 	[Export]
 	public float JumpDistanceToPeak
 	{
@@ -64,7 +64,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _jumpDistanceFromPeakToGround = 1;
+	private float _jumpDistanceFromPeakToGround = 1.0f;
 	[Export]
 	public float JumpDistanceFromPeakToGround
 	{
@@ -76,7 +76,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _doubleJumpHeight = 2;
+	private float _doubleJumpHeight = 2.0f;
 	[Export]
 	public float DoubleJumpHeight
 	{
@@ -88,7 +88,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _doubleJumpDistance = 2;
+	private float _doubleJumpDistance = 2.0f;
 	[Export]
 	public float DoubleJumpDistance
 	{
@@ -100,7 +100,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _jumpPeakFloatHeight = 1;
+	private float _jumpPeakFloatHeight = 1.0f;
 	[Export]
 	public float JumpPeakFloatHeight
 	{
@@ -112,7 +112,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _jumpPeakFloatDistance = 2;
+	private float _jumpPeakFloatDistance = 2.0f;
 	[Export]
 	public float JumpPeakFloatDistance
 	{
@@ -124,7 +124,7 @@ public partial class PlatformerMoveComponent : Node
 		}
 	}
 
-	private float _jumpPeakFloatSpeed = 4;
+	private float _jumpPeakFloatSpeed = 4.0f;
 	[Export]
 	public float JumpPeakFloatSpeed
 	{
@@ -137,12 +137,12 @@ public partial class PlatformerMoveComponent : Node
 	}
 
 	[Export]
-	public float BeginFloatingVelocity { get; set; } = 75;
+	public float BeginFloatingVelocity { get; set; } = 75.0f;
 
 	[Export]
-	public float BeginFallingVelocity { get; set; } = 0;
+	public float BeginFallingVelocity { get; set; } = 0.0f;
 
-	private float _maximumFallSpeed = 50;
+	private float _maximumFallSpeed = 50.0f;
 	[Export]
 	public float MaximumFallSpeed
 	{
@@ -166,10 +166,10 @@ public partial class PlatformerMoveComponent : Node
 	public float FallGravity { get; private set; }
 
 	[Export]
-	public float WallJumpMovementControlAcceleration = 3.0f;
+	public float WallJumpControlTimeout { get; set; } = 0.5f;
 
 
-	private Vector2 Velocity { get; set; } = Vector2.Zero;
+	private float _pendingGravity = 0;
 
 	private void RecalculateDependentProperties()
 	{
@@ -206,33 +206,38 @@ public partial class PlatformerMoveComponent : Node
 	public void ImmediatelyUpdateHorizontalVelocity(float input)
 	{
 		float targetVelocity = input * MoveSpeed;
-		Velocity = Velocity with { X = targetVelocity };
-		_character.Velocity = Velocity;
+		_character.Velocity = _character.Velocity with { X = targetVelocity };
 	}
 
-	public void UpdateHorizontalVelocity(float input)
+	public void UpdateHorizontalVelocity(float input, float delta)
 	{
 		float targetVelocity = input * MoveSpeed;
 
 		// We want to use the deceleration rate if either we are slowing down
 		// or changing directions.
+		// NOTE: very important to use `Math.Sign` and not `Mathf.Sign`.
+		// `Mathf.Sign` doesn't return a distinct value for `0`, but `Math.Sign`
+		// does.
 		bool decelerating = (
-			Math.Abs(targetVelocity) < Math.Abs(Velocity.X) ||
-			Math.Sign(targetVelocity) != Math.Sign(Velocity.X)
+			Math.Abs(targetVelocity) < Math.Abs(_character.Velocity.X) ||
+			Math.Sign(targetVelocity) != Math.Sign(_character.Velocity.X)
 		);
 
+		// Get our base acceleration
 		float acceleration = decelerating ? MoveDeceleration : MoveAcceleration;
 
-		float newHorizontalVelocity = Mathf.MoveToward(Velocity.X, targetVelocity, acceleration);
+		// Apply our acceleration to the character's movement.
+		float newHorizontalVelocity = Mathf.MoveToward(_character.Velocity.X, targetVelocity, acceleration * delta);
 
-		Velocity = Velocity with { X = newHorizontalVelocity };
-		_character.Velocity = Velocity;
+		// TODO preserve momentum if we are launched by moving platforms and the like
+
+		_character.Velocity = _character.Velocity with { X = newHorizontalVelocity };
 	}
 
 	private void ApplyJump(float jumpVerticalVelocity)
 	{
-		Velocity = Velocity with { Y = -jumpVerticalVelocity };
-		_character.Velocity = Velocity;
+		_pendingGravity = 0.0f;
+		_character.Velocity = _character.Velocity with { Y = -jumpVerticalVelocity };
 	}
 
 	public void ApplyFirstJump()
@@ -247,17 +252,12 @@ public partial class PlatformerMoveComponent : Node
 
 	public void ClearVerticalVelocity()
 	{
-		Velocity = Velocity with { Y = 0 };
-		_character.Velocity = Velocity;
+		_character.Velocity = _character.Velocity with { Y = 0.0f };
+		_pendingGravity = 0.0f;
 	}
 
 	private void ApplyGravity(double delta, float gravity)
 	{
-		if (_character.IsOnCeiling() || _character.IsOnFloor())
-		{
-			ClearVerticalVelocity();
-		}
-
 		float verticalAcceleration = gravity * (float)delta;
 		float halfVerticalAcceleration = verticalAcceleration / 2.0f;
 
@@ -266,11 +266,17 @@ public partial class PlatformerMoveComponent : Node
 		// track of the full acceleration in the local Velocity. In the next
 		// frame, we'll add the remaining half of this frame's acceleration, as
 		// well as half of the next frame's acceleration
-		float characterVerticalVelocity = Math.Min(Velocity.Y + halfVerticalAcceleration, MaximumFallSpeed);
-		_character.Velocity = Velocity with { Y = characterVerticalVelocity };
+		float wantedVerticalVelocity = _character.Velocity.Y + halfVerticalAcceleration + _pendingGravity;
 
-		float ownVerticalVelocity = Math.Min(Velocity.Y + verticalAcceleration, MaximumFallSpeed);
-		Velocity = Velocity with { Y = ownVerticalVelocity };
+		// Limit ourselves to a terminal velocity
+		float clampedVerticalVelocity = Math.Min(wantedVerticalVelocity, MaximumFallSpeed);
+
+		// Apply the new velocity to the character
+		_character.Velocity = _character.Velocity with { Y = clampedVerticalVelocity };
+
+		// Save the remaining gravity from this frame to be applied the next
+		// time this method is called.
+		_pendingGravity = halfVerticalAcceleration;
 	}
 
 	public void ApplyJumpGravity(double delta)

@@ -14,7 +14,6 @@ public partial class Player : CharacterBody2D
 	private Timer _coyoteTimer;
 	private Timer _jumpQueueTimer;
 	private Timer _wallJumpControlTimer;
-	private float _wallJumpControlTimeout = 0.2f;
 	private RayCast2D _wallDetector;
 
 	// Essentially, the X component of Vector2.Right or Vector2.Left. Since
@@ -36,20 +35,35 @@ public partial class Player : CharacterBody2D
 
 	private float LerpedMovement()
 	{
-		float rawMovement = _controller.WantedMovement() * _moveComponent.MoveSpeed;
+		float wantedMovement = _controller.WantedMovement();
+		float lerpCoefficient = 1.0f;
 
-		if (_wallJumpControlTimer.IsStopped())
+		// TODO refactor this out into state logic
+		if (!_wallJumpControlTimer.IsStopped())
 		{
-			return rawMovement;
+			// If the timer is active, we've recently wall jumped, and need to
+			// reduce movement input.
+			float ratioOfTimeSpent = Mathf.InverseLerp(
+				_moveComponent.WallJumpControlTimeout,
+				0.0f,
+				(float)_wallJumpControlTimer.TimeLeft
+			);
+
+			float responseFloor = 0.2f;
+
+			if (ratioOfTimeSpent < responseFloor)
+			{
+				lerpCoefficient = 0.0f;
+			}
+			else
+			{
+				float ratioFromFloorToOne = Mathf.InverseLerp(responseFloor, 1.0f, ratioOfTimeSpent);
+				lerpCoefficient = (float)Math.Sin(Math.PI / 2 * ratioFromFloorToOne);
+			}
 		}
 
-		// If the timer is active, we've recently wall jumped, and need to
-		// reduce movement input.
-		float ratioOfTimeoutExpired = (_wallJumpControlTimeout - (float)_wallJumpControlTimer.TimeLeft) / _wallJumpControlTimeout;
-		float lerpCoefficient = (float)Math.Sin(Math.PI / 2 * ratioOfTimeoutExpired);
-		float lerpedMovement = Velocity.X + (rawMovement - Velocity.X) * lerpCoefficient;
 
-		return lerpedMovement;
+		return Mathf.Lerp(_facing, wantedMovement, lerpCoefficient);
 	}
 
 	public override void _Ready()
@@ -99,7 +113,7 @@ public partial class Player : CharacterBody2D
 	public override void _PhysicsProcess(double delta)
 	{
 		// Apply the horizontal movement using the move component
-		_moveComponent.UpdateHorizontalVelocity(LerpedMovement());
+		_moveComponent.UpdateHorizontalVelocity(LerpedMovement(), (float)delta);
 
 		// Update facing
 		if (Velocity.X > 0)
@@ -114,8 +128,6 @@ public partial class Player : CharacterBody2D
 
 	public void OnGroundStateEntered()
 	{
-		_moveComponent.ClearVerticalVelocity();
-
 		if (!_jumpQueueTimer.IsStopped() && _jumpQueueTimer.TimeLeft > 0)
 		{
 			_stateChart.SendEvent("jump");
@@ -131,10 +143,6 @@ public partial class Player : CharacterBody2D
 			_stateChart.SendEvent("airborne");
 	}
 
-	public void OnAirborneStateEntered()
-	{
-	}
-
 	public void OnAirborneStatePhysicsProcess(double delta)
 	{
 		if (!_controller.IsJumpHeld())
@@ -142,9 +150,6 @@ public partial class Player : CharacterBody2D
 
 		if (IsOnFloor())
 			_stateChart.SendEvent("grounded");
-
-		if (IsOnCeiling())
-			_moveComponent.ClearVerticalVelocity();
 
 		if (IsGrabbingWall())
 			_stateChart.SendEvent("climb");
@@ -217,10 +222,10 @@ public partial class Player : CharacterBody2D
 		{
 			if (_controller.IsJumpWanted())
 			{
-				_moveComponent.ImmediatelyUpdateHorizontalVelocity(_controller.WantedMovement() * _facing);
+				_moveComponent.ImmediatelyUpdateHorizontalVelocity(-_facing);
 				_moveComponent.ApplyFirstJump();
 				_stateChart.SendEvent("jump");
-				_wallJumpControlTimer.Start(_wallJumpControlTimeout);
+				_wallJumpControlTimer.Start(_moveComponent.WallJumpControlTimeout);
 			}
 		}
 		else

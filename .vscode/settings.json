@@ -3,6 +3,7 @@
         "lerp",
         "lerped",
         "Mathf",
-        "Platformer"
+        "Platformer",
+        "Verlet"
     ]
 }
