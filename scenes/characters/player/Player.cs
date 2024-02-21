@@ -30,11 +30,16 @@ public partial class Player : CharacterBody2D
 
 	private bool IsGrabbingWall()
 	{
-		return _wallDetector.IsColliding() && Math.Sign(_controller.WantedMovement()) == Math.Sign(_facing);
+		return _wallDetector.IsColliding() && _controller.IsClimbHeld();
 	}
 
 	private float LerpedMovement()
 	{
+		if (IsGrabbingWall())
+		{
+			return 0.0f;
+		}
+
 		float wantedMovement = _controller.WantedMovement();
 		float lerpCoefficient = 1.0f;
 
@@ -64,6 +69,14 @@ public partial class Player : CharacterBody2D
 
 
 		return Mathf.Lerp(_facing, wantedMovement, lerpCoefficient);
+	}
+
+	private void WallJump()
+	{
+		_moveComponent.ImmediatelyUpdateHorizontalVelocity(-_facing);
+		_moveComponent.ApplyFirstJump();
+		_stateChart.SendEvent("jump");
+		_wallJumpControlTimer.Start(_moveComponent.WallJumpControlTimeout);
 	}
 
 	public override void _Ready()
@@ -219,10 +232,7 @@ public partial class Player : CharacterBody2D
 		{
 			if (_controller.IsJumpWanted())
 			{
-				_moveComponent.ImmediatelyUpdateHorizontalVelocity(-_facing);
-				_moveComponent.ApplyFirstJump();
-				_stateChart.SendEvent("jump");
-				_wallJumpControlTimer.Start(_moveComponent.WallJumpControlTimeout);
+				WallJump();
 			}
 		}
 		else

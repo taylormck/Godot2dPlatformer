@@ -18,4 +18,9 @@ public partial class PlayerController : Node
 	{
 		return Input.IsActionPressed("jump");
 	}
+
+	public bool IsClimbHeld()
+	{
+		return Input.IsActionPressed("climb");
+	}
 }
